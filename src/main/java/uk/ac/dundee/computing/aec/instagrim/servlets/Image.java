@@ -8,6 +8,9 @@ import java.io.InputStream;
 import java.io.OutputStream;
 import java.io.PrintWriter;
 import java.util.HashMap;
+import java.util.UUID;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 import javax.servlet.RequestDispatcher;
 import javax.servlet.ServletConfig;
 import javax.servlet.ServletException;
@@ -25,6 +28,7 @@ import org.apache.commons.fileupload.util.Streams;
 import uk.ac.dundee.computing.aec.instagrim.lib.CassandraHosts;
 import uk.ac.dundee.computing.aec.instagrim.lib.Convertors;
 import uk.ac.dundee.computing.aec.instagrim.models.PicModel;
+import uk.ac.dundee.computing.aec.instagrim.stores.Comment;
 import uk.ac.dundee.computing.aec.instagrim.stores.LoggedIn;
 import uk.ac.dundee.computing.aec.instagrim.stores.Pic;
 
@@ -37,6 +41,7 @@ import uk.ac.dundee.computing.aec.instagrim.stores.Pic;
     "/Thumb/*",
     "/Images",
     "/Images/*"
+            
 })
 @MultipartConfig
 
@@ -61,8 +66,12 @@ public class Image extends HttpServlet {
     }
 
     public void init(ServletConfig config) throws ServletException {
-        // TODO Auto-generated method stub
-        cluster = CassandraHosts.getCluster();
+        try {
+            // TODO Auto-generated method stub
+            cluster = CassandraHosts.getCluster();
+        } catch (IOException ex) {
+            Logger.getLogger(Image.class.getName()).log(Level.SEVERE, null, ex);
+        }
     }
 
     /**
@@ -84,11 +93,18 @@ public class Image extends HttpServlet {
                 DisplayImage(Convertors.DISPLAY_PROCESSED,args[2], response);
                 break;
             case 2:
+                System.out.println(args[2]);
+                if(args[2].equals("main"))
+                {
+                                    System.out.println("GetAllUser");
+                DisplayImageListAllUser(request,response);
+                }else{
                 DisplayImageList(args[2], request, response);
+                }
                 break;
             case 3:
                 DisplayImage(Convertors.DISPLAY_THUMB,args[2],  response);
-                break;
+                break;        
             default:
                 error("Bad Operator", response);
         }
@@ -103,12 +119,21 @@ public class Image extends HttpServlet {
         rd.forward(request, response);
 
     }
-
-    private void DisplayImage(int type,String Image, HttpServletResponse response) throws ServletException, IOException {
+    
+     private void DisplayImageListAllUser(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
         PicModel tm = new PicModel();
         tm.setCluster(cluster);
-  
-        
+        java.util.LinkedList<Pic> lsPics = tm.getPicsForAll();
+        RequestDispatcher rd = request.getRequestDispatcher("/UsersPics.jsp");
+        request.setAttribute("Pics", lsPics);
+        rd.forward(request, response);
+
+    }
+       
+    private void DisplayImage(int type,String Image,HttpServletResponse response) throws ServletException, IOException {
+        PicModel tm = new PicModel();
+        tm.setCluster(cluster);
+   
         Pic p = tm.getPic(type,java.util.UUID.fromString(Image));
         
         OutputStream out = response.getOutputStream();
@@ -122,6 +147,9 @@ public class Image extends HttpServlet {
         for (int length = 0; (length = input.read(buffer)) > 0;) {
             out.write(buffer, 0, length);
         }
+        
+        
+       
         out.close();
     }
 

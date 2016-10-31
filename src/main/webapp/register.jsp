@@ -13,33 +13,51 @@
         <link rel="stylesheet" type="text/css" href="Styles.css" />
     </head>
     <body>
-        <header>
-        <h1>InstaGrim ! </h1>
-        <h2>Your world in Black and White</h2>
-        </header>
-        <nav>
-            <ul>
-                
-                <li><a href="/Instagrim/Images/majed">Sample Images</a></li>
-            </ul>
-        </nav>
+        <ul class="topNav" id="topNav">  
+               <li class="left"><a href="/Instagrim"> InstaGrim </a></li>
+               <li class="right"><a href="login.jsp">Login</a></li>
+               <li class="right">Already got an account?</li>
+          </ul>
+        
        
-        <article>
+        <div class ="RegBox">
+            <div class ="RegPanel">
+                
             <h3>Register as user</h3>
-            <form method="POST"  action="Register">
-                <ul>
-                    <li>User Name <input type="text" name="username"></li>
-                    <li>Password <input type="password" name="password"></li>
-                </ul>
-                <br/>
-                <input type="submit" value="Regidter"> 
-            </form>
+           <hr>
+                <div style="float: left; margin-left: 10px;">
+                                
 
-        </article>
+                   <br><br> Username <br><br>
+                    Password <br><br>
+                    First Name <br><br>
+                    Last Name <br><br>
+                    Email Address <br><br>
+                    First line of Address <br><br>
+                    City <br><br>
+                    Post Code <br><br>
+                </div>
+                <div style="float: left;">
+                    <form method="POST"  action="Register"><br><br>
+                    <input type="text" name="username"><br><br>
+                    <input type="password" name="password"><br><br>
+                    <input type="text" name="firstname"><br><br>
+                    <input type="text" name="lastname"><br><br>
+                    <input type="text" name="email"><br><br>
+                    <input type="text" name="street"><br><br>              
+                    <input type="text" name="city"><br><br>
+                    <input type="text" name="postcode"><br><br>
+                    <input type="submit" value="Register"> <br><br>
+                                </form>
+
+                </div>
+                
+                <br/>
+                
+            </div>
+        </div>
+
         <footer>
-            <ul>
-                <li class="footer"><a href="/Instagrim">Home</a></li>
-            </ul>
         </footer>
     </body>
 </html>

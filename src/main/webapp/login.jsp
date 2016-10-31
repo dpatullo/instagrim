@@ -14,33 +14,40 @@
 
     </head>
     <body>
-        <header>
-        <h1>InstaGrim ! </h1>
-        <h2>Your world in Black and White</h2>
-        </header>
-        <nav>
-            <ul>
-                
-                <li><a href="/Instagrim/Images/majed">Sample Images</a></li>
-            </ul>
-        </nav>
+      
+        <ul class="topNav" id="topNav">  
+               <li class="left"><a href="/Instagrim"> InstaGrim </a></li>
+               <li class="right"><a href="register.jsp">Register</a></li>
+           
+          </ul>
        
-        <article>
-            <h3>Login</h3>
-            <form method="POST"  action="Login">
-                <ul>
-                    <li>User Name <input type="text" name="username"></li>
-                    <li>Password <input type="password" name="password"></li>
-                </ul>
-                <br/>
-                <input type="submit" value="Login"> 
-            </form>
+        <div class ="loginBox">
+            <div class ="loginPanel">
+                <h3>Login</h3><hr>
+                <br>
+                <br>
+                <br>
+                <div style="float: left; margin-left: 60px;">Username: <br><br>Password: </div>
+                <div style="float: left">
+                    <form method="POST"  action="Login">
+                        <input type="text" name="username"><br><br>
+                        <input type="password" name="password"><br><br>
+                        <input type="submit" value="Login"> 
+                    </form>
 
-        </article>
+                </div>
+                       <%String error = (String) session.getAttribute("Error");
+                    if(error!=null)
+                    {%>
+                    
+                    <h2 style="color: red; font-weight: bold"><%=error%></h2>
+                    
+                            
+                            <%session.setAttribute("Error", null);}%>
+        </div>
+        
+        
         <footer>
-            <ul>
-                <li class="footer"><a href="/Instagrim">Home</a></li>
-            </ul>
         </footer>
     </body>
 </html>

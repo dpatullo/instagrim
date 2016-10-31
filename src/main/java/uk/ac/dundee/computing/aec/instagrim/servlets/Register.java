@@ -9,6 +9,8 @@ package uk.ac.dundee.computing.aec.instagrim.servlets;
 import com.datastax.driver.core.Cluster;
 import java.io.IOException;
 import java.io.PrintWriter;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 import javax.servlet.RequestDispatcher;
 import javax.servlet.ServletConfig;
 import javax.servlet.ServletException;
@@ -27,8 +29,12 @@ import uk.ac.dundee.computing.aec.instagrim.models.User;
 public class Register extends HttpServlet {
     Cluster cluster=null;
     public void init(ServletConfig config) throws ServletException {
-        // TODO Auto-generated method stub
-        cluster = CassandraHosts.getCluster();
+        try {
+            // TODO Auto-generated method stub
+            cluster = CassandraHosts.getCluster();
+        } catch (IOException ex) {
+            Logger.getLogger(Register.class.getName()).log(Level.SEVERE, null, ex);
+        }
     }
 
 
@@ -47,10 +53,17 @@ public class Register extends HttpServlet {
             throws ServletException, IOException {
         String username=request.getParameter("username");
         String password=request.getParameter("password");
+        String first=request.getParameter("firstname");
+        String last=request.getParameter("lastname");
+        String email=request.getParameter("email");
+        String address=request.getParameter("address");
+        String city=request.getParameter("City");
+        String postcode=request.getParameter("postcode");
+        
         
         User us=new User();
         us.setCluster(cluster);
-        us.RegisterUser(username, password);
+        us.RegisterUser(username, password, first, last, email, address, city, postcode);
         
 	response.sendRedirect("/Instagrim");
         

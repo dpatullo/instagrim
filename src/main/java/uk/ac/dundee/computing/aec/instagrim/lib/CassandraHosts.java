@@ -1,6 +1,7 @@
 package uk.ac.dundee.computing.aec.instagrim.lib;
 
 import com.datastax.driver.core.*;
+import java.io.IOException;
 
 import java.util.Iterator;
 import java.util.Set;
@@ -63,7 +64,7 @@ public final class CassandraHosts {
         return sHosts;
     }
 
-    public static Cluster getCluster() {
+    public static Cluster getCluster() throws IOException {
         System.out.println("getCluster");
         cluster = Cluster.builder()
                 .addContactPoint(Host).build();
@@ -71,7 +72,7 @@ public final class CassandraHosts {
             return null;
         }
         Keyspaces.SetUpKeySpaces(cluster);
-
+      //  Keyspaces.addDefault(cluster);
         return cluster;
 
     }

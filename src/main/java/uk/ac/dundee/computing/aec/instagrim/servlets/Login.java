@@ -6,9 +6,17 @@
 
 package uk.ac.dundee.computing.aec.instagrim.servlets;
 
+import com.datastax.driver.core.BoundStatement;
 import com.datastax.driver.core.Cluster;
+import com.datastax.driver.core.PreparedStatement;
+import com.datastax.driver.core.ResultSet;
+import com.datastax.driver.core.Row;
+import com.datastax.driver.core.Session;
 import java.io.IOException;
 import java.io.PrintWriter;
+import java.util.UUID;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 import javax.servlet.RequestDispatcher;
 import javax.servlet.ServletConfig;
 import javax.servlet.ServletException;
@@ -32,8 +40,12 @@ public class Login extends HttpServlet {
 
 
     public void init(ServletConfig config) throws ServletException {
-        // TODO Auto-generated method stub
-        cluster = CassandraHosts.getCluster();
+        try {
+            // TODO Auto-generated method stub
+            cluster = CassandraHosts.getCluster();
+        } catch (IOException ex) {
+            Logger.getLogger(Login.class.getName()).log(Level.SEVERE, null, ex);
+        }
     }
 
     /**
@@ -55,20 +67,33 @@ public class Login extends HttpServlet {
         us.setCluster(cluster);
         boolean isValid=us.IsValidUser(username, password);
         HttpSession session=request.getSession();
+        Session sessionInsta = cluster.connect("instagrim");
         System.out.println("Session in servlet "+session);
         if (isValid){
             LoggedIn lg= new LoggedIn();
             lg.setLogedin();
             lg.setUsername(username);
-            //request.setAttribute("LoggedIn", lg);
             
+            UUID profileID = us.getProfile(username);
+            String first = us.getFirstName(username);
+            String last = us.getLastName(username);
+            String email = us.getEmail(username);
+            
+                lg.setEmail(email);
+                lg.setFirstName(first);
+                lg.setLastName(last);
+                lg.setProfile(profileID);
+                //request.setAttribute("LoggedIn", lg);
+
             session.setAttribute("LoggedIn", lg);
             System.out.println("Session in servlet "+session);
             RequestDispatcher rd=request.getRequestDispatcher("index.jsp");
 	    rd.forward(request,response);
             
         }else{
-            response.sendRedirect("/Instagrim/login.jsp");
+            session.setAttribute("Error", "Incorrect username/password");
+            RequestDispatcher rd=request.getRequestDispatcher("login.jsp");
+            rd.forward(request,response);
         }
         
     }

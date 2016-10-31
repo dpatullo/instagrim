@@ -14,6 +14,7 @@ package uk.ac.dundee.computing.aec.instagrim.models;
  */
 import com.datastax.driver.core.BoundStatement;
 import com.datastax.driver.core.Cluster;
+import com.datastax.driver.core.LocalDate;
 import com.datastax.driver.core.PreparedStatement;
 import com.datastax.driver.core.ResultSet;
 import com.datastax.driver.core.Row;
@@ -30,11 +31,13 @@ import java.io.InputStream;
 import java.nio.ByteBuffer;
 import java.util.Date;
 import java.util.LinkedList;
+import java.util.UUID;
 import javax.imageio.ImageIO;
 import static org.imgscalr.Scalr.*;
 import org.imgscalr.Scalr.Method;
 
 import uk.ac.dundee.computing.aec.instagrim.lib.*;
+import uk.ac.dundee.computing.aec.instagrim.stores.Comment;
 import uk.ac.dundee.computing.aec.instagrim.stores.Pic;
 //import uk.ac.dundee.computing.aec.stores.TweetStore;
 
@@ -80,6 +83,46 @@ public class PicModel {
             Date DateAdded = new Date();
             session.execute(bsInsertPic.bind(picid, buffer, thumbbuf,processedbuf, user, DateAdded, length,thumblength,processedlength, type, name));
             session.execute(bsInsertPicToUser.bind(picid, user, DateAdded));
+            session.close();
+
+        } catch (IOException ex) {
+            System.out.println("Error --> " + ex);
+        }
+    }
+    
+    public void insertProfilePic(byte[] b, String type, String name, String user) {
+        try {
+            Convertors convertor = new Convertors();
+
+            String types[]=Convertors.SplitFiletype(type);
+            ByteBuffer buffer = ByteBuffer.wrap(b);
+            int length = b.length;
+            java.util.UUID picid = convertor.getTimeUUID();
+            
+            //The following is a quick and dirty way of doing this, will fill the disk quickly !
+            Boolean success = (new File("/var/tmp/instagrim/")).mkdirs();
+            FileOutputStream output = new FileOutputStream(new File("/var/tmp/instagrim/" + picid));
+
+            output.write(b);
+            byte []  thumbb = picresize(picid.toString(),types[1]);
+            int thumblength= thumbb.length;
+            ByteBuffer thumbbuf=ByteBuffer.wrap(thumbb);
+            byte[] processedb = picdecolour(picid.toString(),types[1]);
+            ByteBuffer processedbuf=ByteBuffer.wrap(processedb);
+            int processedlength=processedb.length;
+            Session session = cluster.connect("instagrim");
+
+            PreparedStatement psInsertPic = session.prepare("insert into pics ( picid, image,thumb,processed, user, interaction_time,imagelength,thumblength,processedlength,type,name) values(?,?,?,?,?,?,?,?,?,?,?)");
+            PreparedStatement psInsertPicToUser = session.prepare("insert into userpiclist ( picid, user, pic_added) values(?,?,?)");
+            PreparedStatement psProfile = session.prepare("Update userprofiles SET profile_pic=? WHERE login=?");
+            BoundStatement bsProfile = new BoundStatement(psProfile);
+            BoundStatement bsInsertPic = new BoundStatement(psInsertPic);
+            BoundStatement bsInsertPicToUser = new BoundStatement(psInsertPicToUser);
+
+            Date DateAdded = new Date();
+            session.execute(bsInsertPic.bind(picid, buffer, thumbbuf,processedbuf, user, DateAdded, length,thumblength,processedlength, type, name));
+            session.execute(bsInsertPicToUser.bind(picid, user, DateAdded));
+            session.execute(bsProfile.bind(picid,user));
             session.close();
 
         } catch (IOException ex) {
@@ -142,7 +185,7 @@ public class PicModel {
                 boundStatement.bind( // here you are binding the 'boundStatement'
                         User));
         if (rs.isExhausted()) {
-            System.out.println("No Images returned");
+            System.out.println("No Images returned - getPicsUser");
             return null;
         } else {
             for (Row row : rs) {
@@ -156,7 +199,94 @@ public class PicModel {
         }
         return Pics;
     }
+    
+    public java.util.LinkedList<Pic> getPicsForAll() {
+        java.util.LinkedList<Pic> Pics = new java.util.LinkedList<>();
+        Session session = cluster.connect("instagrim");
+        PreparedStatement ps = session.prepare("select picid,pic_added,user from userpiclist");
+        ResultSet rs = null;
+        BoundStatement boundStatement = new BoundStatement(ps);
+        rs = session.execute(boundStatement);
+        if (rs.isExhausted()) {
+            System.out.println("No Images returned - GetPicsALL");
+            return null;
+        } else {
+            for (Row row : rs) {
+                Pic pic = new Pic();
+                java.util.UUID UUID = row.getUUID("picid");
+                Date date = row.getTimestamp("pic_added");
+                String user = row.getString("user");
+                //Result DateResult = row.getResult("pic_added"); 
+                System.out.println("UUID" + UUID.toString());
+                pic.setUUID(UUID);
+                pic.setTime(date.toString());
+                pic.setUser(user);
+                Pics.add(pic);
 
+            }
+        }
+        return Pics;
+    }
+    
+      public UUID getUserProfile(String user) {
+        UUID profile = null;
+        Session session = cluster.connect("instagrim");
+        PreparedStatement ps = session.prepare("select profile_pic from userprofiles where login =?");
+        ResultSet rs = null;
+        BoundStatement boundStatement = new BoundStatement(ps);
+        rs = session.execute(boundStatement.bind(user));
+        if (rs.isExhausted()) {
+            System.out.println("No Images returned - UserProfile");
+            return null;
+        } else {
+            for (Row row : rs) {
+                java.util.UUID UUIDprof = row.getUUID("profile_pic");   
+                profile = UUIDprof;
+            }
+        }
+        return profile;
+    }
+    
+       public LinkedList<Comment> getComments(String ID) {
+        java.util.LinkedList<Comment> Comments = new java.util.LinkedList<>();
+        Session session = cluster.connect("instagrim");
+        PreparedStatement ps = session.prepare("select content, user, time from comments where picid =? ALLOW FILTERING");
+        ResultSet rs = null;
+        BoundStatement boundStatement = new BoundStatement(ps);
+        rs = session.execute(boundStatement.bind(UUID.fromString(ID)));
+        if (rs.isExhausted()) {
+            System.out.println("No Comments returned - CommentGet");
+            return null;
+        } else {
+            for (Row row : rs) {
+                Comment comment = new Comment();
+                comment.setContents(row.getString("content"));
+                comment.setUser(row.getString("user"));
+                Date date = row.getTimestamp("time");
+                System.out.print(date + ": " + row.getString("content") + " --");
+                comment.setDate(date.toString());
+                Comments.add(comment);
+            }
+        }
+        return Comments;
+    }
+       
+       public void insertComment(String contents, UUID picID, String user) {
+
+            Convertors convertor = new Convertors();
+            Session session = cluster.connect("instagrim");
+            java.util.UUID commentID = convertor.getTimeUUID();
+            PreparedStatement ps = session.prepare("Insert into comments (content, user, time, picid, commentID) values (?,?,?,?,?) ");
+            ResultSet rs = null;
+            BoundStatement boundStatement = new BoundStatement(ps);
+
+            Date DateAdded = new Date();
+            session.execute(boundStatement.bind(contents, user, DateAdded, picID,commentID)); 
+            
+
+    }
+
+    
     public Pic getPic(int image_type, java.util.UUID picid) {
         Session session = cluster.connect("instagrim");
         ByteBuffer bImage = null;
@@ -181,7 +311,7 @@ public class PicModel {
                             picid));
 
             if (rs.isExhausted()) {
-                System.out.println("No Images returned");
+                System.out.println("No Images returned - getPic");
                 return null;
             } else {
                 for (Row row : rs) {
@@ -212,5 +342,44 @@ public class PicModel {
         return p;
 
     }
+    
+    public Pic getRandomPic() {
+        Session session = cluster.connect("instagrim");
+        ByteBuffer bImage = null;
+        String type = null;
+        int length = 0;
+        UUID pUUID = null;
+        try {
+            Convertors convertor = new Convertors();
+            ResultSet rs = null;
+            PreparedStatement ps = null;
+         
+                ps = session.prepare("select image,imagelength,type,picid from pics LIMIT 1");  
+                BoundStatement boundStatement = new BoundStatement(ps);
+                rs = session.execute(boundStatement.bind());
 
+            if (rs.isExhausted()) {
+                System.out.println("No Images returned - getPic");
+                return null;
+            } else {
+                for (Row row : rs) {
+                    bImage = row.getBytes("image");
+                    length = row.getInt("imagelength");
+                    type = row.getString("type");
+                    pUUID = row.getUUID("picid");
+
+                }
+            }
+        } catch (Exception et) {
+            System.out.println("Can't get Pic" + et);
+            return null;
+        }
+        session.close();
+        Pic p = new Pic();
+        p.setPic(bImage, length, type);
+        p.setUUID(pUUID);
+
+        return p;
+
+    }
 }

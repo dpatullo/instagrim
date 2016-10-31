@@ -4,6 +4,7 @@
     Author     : Administrator
 --%>
 
+<%@page import="uk.ac.dundee.computing.aec.instagrim.stores.LoggedIn"%>
 <%@page contentType="text/html" pageEncoding="UTF-8"%>
 <!DOCTYPE html>
 <html>
@@ -13,14 +14,39 @@
         <link rel="stylesheet" type="text/css" href="Styles.css" />
     </head>
     <body>
-        <h1>InstaGrim ! </h1>
-        <h2>Your world in Black and White</h2>
-        <nav>
-            <ul>
-                <li class="nav"><a href="upload.jsp">Upload</a></li>
-                <li class="nav"><a href="/Instagrim/Images/majed">Sample Images</a></li>
-            </ul>
-        </nav>
+        <div class="wrapper">
+           <ul class="topNav" id="topNav">  
+            <li class="left"><a href="/Instagrim"> InstaGrim </a></li>
+                    <% LoggedIn lg = (LoggedIn) session.getAttribute("LoggedIn"); 
+                              if ((lg != null) && lg.getlogedin()) {
+                                  String UserName = lg.getUsername();
+                          %>
+               <li class="left"> Welcome back <%=UserName%></li>
+    
+               
+                <li class="dropdown-right">
+                     <a href="#" class="dropbtn"><img  <%if(lg.getProfile() == null){%> src="./Icons/default.png" <%}else{%> src="/Instagrim/Thumb/<%=lg.getProfile()%>" <%}%>style="width:50px;height:50px;border:5px"></a> 
+                        <div class="dropdown-content">
+                            <a href="/Instagrim/Images/<%=lg.getUsername()%>">Your Images</a>
+                            <a href="upload.jsp">Upload</a>  
+                            <a href="/Instagrim/Profile/<%=lg.getUsername()%>">Profile</a>
+                            <form method="POST"  action="Logout"><input type="submit" value="Logout"></form>
+                        </div>
+                </li>
+         
+           <%}else{%>   
+           
+                <li class="dropdown-right">
+                    <a href="#" class="dropbtn">Account</a>
+                        <div class="dropdown-content">
+                           <a href="login.jsp">Login</a>
+                           <a href="register.jsp">Register</a>
+                        </div>
+                         
+                </li>
+                <%}%>
+           </ul>
+        </div>
  
         <article>
             <h3>File Upload</h3>
@@ -33,9 +59,7 @@
 
         </article>
         <footer>
-            <ul>
-                <li class="footer"><a href="/Instagrim">Home</a></li>
-            </ul>
+         
         </footer>
     </body>
 </html>

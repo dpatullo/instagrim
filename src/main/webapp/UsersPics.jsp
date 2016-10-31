@@ -4,6 +4,9 @@
     Author     : Administrator
 --%>
 
+<%@page import="com.datastax.driver.core.Cluster"%>
+<%@page import="uk.ac.dundee.computing.aec.instagrim.lib.CassandraHosts"%>
+<%@page import="uk.ac.dundee.computing.aec.instagrim.models.PicModel"%>
 <%@page import="java.util.*"%>
 <%@page contentType="text/html" pageEncoding="UTF-8"%>
 <%@ page import="uk.ac.dundee.computing.aec.instagrim.stores.*" %>
@@ -15,44 +18,43 @@
         <link rel="stylesheet" type="text/css" href="/Instagrim/Styles.css" />
     </head>
     <body>
-        <header>
-        
-        <h1>InstaGrim ! </h1>
-        <h2>Your world in Black and White</h2>
-        </header>
-        
-        <nav>
-            <ul>
-                <li class="nav"><a href="/Instagrim/upload.jsp">Upload</a></li>
-                <li class="nav"><a href="/Instagrim/Images/majed">Sample Images</a></li>
-            </ul>
-        </nav>
+         <ul class="topNav" id="topNav">  
+               <li class="left"><a href="/Instagrim"> InstaGrim </a></li>
+               <li class="left"> Your world in Black and White </li>
+               <li class="right"><a href="../upload.jsp">Upload</a></li>
+               <li class="right"><a href="/Instagrim/Images/majed">Sample Images</a></li>
+
+
+          </ul>
  
-        <article>
+        
             <h1>Your Pics</h1>
-        <%
-            java.util.LinkedList<Pic> lsPics = (java.util.LinkedList<Pic>) request.getAttribute("Pics");
-            if (lsPics == null) {
-        %>
-        <p>No Pictures found</p>
-        <%
-        } else {
-            Iterator<Pic> iterator;
-            iterator = lsPics.iterator();
-            while (iterator.hasNext()) {
-                Pic p = (Pic) iterator.next();
 
-        %>
-        <a href="/Instagrim/Image/<%=p.getSUUID()%>" ><img src="/Instagrim/Thumb/<%=p.getSUUID()%>"></a><br/><%
+            <%
+                java.util.LinkedList<Pic> lsPics = (java.util.LinkedList<Pic>) request.getAttribute("Pics");
+                if (lsPics == null) {
+            %>
+            <p>No Pictures found</p>
+            <%
+            } else {
+                Iterator<Pic> iterator;
+                iterator = lsPics.iterator();
+                while (iterator.hasNext()) {
+                        Pic p = (Pic) iterator.next();
 
-            }
-            }
-        %>
-        </article>
-        <footer>
-            <ul>
-                <li class="footer"><a href="/Instagrim">Home</a></li>
-            </ul>
+                    %>
+                      
+
+                    <a href="/Instagrim/Comments/<%=p.getSUUID()%>"><img src="/Instagrim/Thumb/<%=p.getSUUID()%>" width="300" height="200"></a>
+              
+                <%
+
+                    }
+                    }
+                %>
+            
+
+        <footer>  
         </footer>
     </body>
 </html>

@@ -18,15 +18,35 @@ public class Pic {
     private int length;
     private String type;
     private java.util.UUID UUID=null;
+    private String time;
+    private String user;
     
     public void Pic() {
 
     }
+    
+    public void setUser(String user)
+    {
+        this.user = user;
+    }
+    
+    public String getUser()
+    {
+        return user;
+    }
+    
     public void setUUID(java.util.UUID UUID){
         this.UUID =UUID;
     }
     public String getSUUID(){
         return UUID.toString();
+    }
+    
+     public void setTime(String time){
+        this.time =time;
+    }
+    public String getTime(){
+        return time;
     }
     public void setPic(ByteBuffer bImage, int length,String type) {
         this.bImage = bImage;
