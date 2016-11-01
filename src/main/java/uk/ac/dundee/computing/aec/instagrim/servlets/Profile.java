@@ -118,7 +118,7 @@ public class Profile extends HttpServlet {
         HttpSession session=request.getSession();
         LoggedIn lg= (LoggedIn)session.getAttribute("LoggedIn");
         UUID profilePicUUID = null;
-                              if ((lg != null) && lg.getlogedin()) {
+                              if ((lg != null) && lg.getLoggedIn()) {
                                   profilePicUUID = lg.getProfile();
                               }
         Pic profpic = tm.getPic(0, profilePicUUID);
@@ -163,7 +163,7 @@ public class Profile extends HttpServlet {
             Session sessionInsta = cluster.connect("instagrim");
             LoggedIn lg= (LoggedIn)session.getAttribute("LoggedIn");
             String username="majed";
-            if (lg.getlogedin()){
+            if (lg.getLoggedIn()){
                 username=lg.getUsername();
             }
             if (i > 0) {

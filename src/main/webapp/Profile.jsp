@@ -19,12 +19,11 @@
         <div class="wrapper">
             <ul class="topNav" id="topNav">  
                 <li class="left"><a href="/Instagrim"> InstaGrim </a></li>
-                <li class="left"> Your world in Black and White </li>
+                <li class="left"><a href="/Instagrim/Images/main"> Explore </a></li>
                      <% LoggedIn lg = (LoggedIn) session.getAttribute("LoggedIn"); 
-                               if ((lg != null) && lg.getlogedin()) {
+                               if ((lg != null) && lg.getLoggedIn()) {
                                    String UserName = lg.getUsername();
                            %>
-                <li class="left"> Welcome back <%=UserName%></li>
 
                  <li class="dropdown-right">
                     
@@ -35,7 +34,7 @@
                              <a href="/Instagrim/Images/<%=lg.getUsername()%>">Your Images</a>
                              <a href="/Instagrim/upload.jsp">Upload</a>  
                              <a href="/Instagrim/Profile/<%=lg.getUsername()%>">Profile</a>
-                             <form method="POST"  action="Logout"><input type="submit" value="Logout"></form>
+                             <form method="POST" action="Logout"><input type="submit" value="Logout"></form>
                          </div>
                  </li>
 
@@ -80,7 +79,7 @@
                         File to upload: <input type="file" name="upfile"><br/>
 
                         <br/>
-                        <input type="submit" value="Press"> to upload the file!
+                        <input type="submit" value="Upload File">
                     </form> 
                     </div>
                     

@@ -23,11 +23,12 @@
         <div class="wrapper">
            <ul class="topNav" id="topNav">  
                <li class="left"><a href="/Instagrim"> InstaGrim </a></li>
+                               <li class="left"><a href="/Instagrim/Images/main"> Explore </a></li>
+
                     <% LoggedIn lg = (LoggedIn) session.getAttribute("LoggedIn"); 
-                              if ((lg != null) && lg.getlogedin()) {
+                              if ((lg != null) && lg.getLoggedIn()) {
                                   String UserName = lg.getUsername();
                           %>
-               <li class="left"> Welcome back <%=UserName%></li>
     
                
                 <li class="dropdown-right">

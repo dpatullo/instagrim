@@ -14,14 +14,15 @@
         <link rel="stylesheet" type="text/css" href="Styles.css" />
     </head>
     <body>
-        <div class="wrapper">
+     
            <ul class="topNav" id="topNav">  
             <li class="left"><a href="/Instagrim"> InstaGrim </a></li>
+                            <li class="left"><a href="/Instagrim/Images/main"> Explore </a></li>
+
                     <% LoggedIn lg = (LoggedIn) session.getAttribute("LoggedIn"); 
-                              if ((lg != null) && lg.getlogedin()) {
+                              if ((lg != null) && lg.getLoggedIn()) {
                                   String UserName = lg.getUsername();
                           %>
-               <li class="left"> Welcome back <%=UserName%></li>
     
                
                 <li class="dropdown-right">
@@ -46,18 +47,24 @@
                 </li>
                 <%}%>
            </ul>
-        </div>
+        
  
-        <article>
-            <h3>File Upload</h3>
-            <form method="POST" enctype="multipart/form-data" action="Image">
-                File to upload: <input type="file" name="upfile"><br/>
+           <div class="innerBox">
+               <div class="RegBox">
+                   <div class="RegPanel">
+                    <h3>File Upload</h3>
+                    <img id="preview" src alt="your image" width="300" height="300" style="filter: grayscale(100%)" />
+                    <form id="form1" method="POST" enctype="multipart/form-data" action="Image">
+                        File to upload:     <input type="file" name="upfile" onchange="document.getElementById('preview').src = window.URL.createObjectURL(this.files[0])">
+                        <br/>
+                        <br/>
+                        <input type="submit" value="Upload File"> 
 
-                <br/>
-                <input type="submit" value="Press"> to upload the file!
-            </form>
-
-        </article>
+                    </form>
+                   </div>
+                </div>
+            </div>
+       
         <footer>
          
         </footer>

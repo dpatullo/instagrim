@@ -15,6 +15,8 @@
     <body>
         <ul class="topNav" id="topNav">  
                <li class="left"><a href="/Instagrim"> InstaGrim </a></li>
+                               <li class="left"><a href="/Instagrim/Images/main"> Explore </a></li>
+
                <li class="right"><a href="login.jsp">Login</a></li>
                <li class="right">Already got an account?</li>
           </ul>

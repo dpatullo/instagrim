@@ -17,6 +17,8 @@
       
         <ul class="topNav" id="topNav">  
                <li class="left"><a href="/Instagrim"> InstaGrim </a></li>
+                               <li class="left"><a href="/Instagrim/Images/main"> Explore </a></li>
+
                <li class="right"><a href="register.jsp">Register</a></li>
            
           </ul>

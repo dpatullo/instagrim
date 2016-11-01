@@ -13,7 +13,7 @@ import java.util.UUID;
  * @author Administrator
  */
 public class LoggedIn {
-    boolean logedin=false;
+    boolean loggedIn=false;
     String Username=null;
     UUID profilePic=null;
     String first=null;
@@ -53,11 +53,11 @@ public class LoggedIn {
         return email;
     }
     
-    public void setLogedin(){
-        logedin=true;
+    public void setLoggedIn(){
+        loggedIn=true;
     }
-    public void setLogedout(){
-        logedin=false;
+    public void setLoggedOut(){
+        loggedIn=false;
     }
     public void setProfile(UUID profile){
         profilePic=profile;
@@ -69,10 +69,10 @@ public class LoggedIn {
     }
     
     public void setLoginState(boolean logedin){
-        this.logedin=logedin;
+        this.loggedIn=logedin;
     }
-    public boolean getlogedin(){
-        return logedin;
+    public boolean getLoggedIn(){
+        return loggedIn;
     }
     
     

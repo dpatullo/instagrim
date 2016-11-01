@@ -20,7 +20,6 @@
     <body>
          <ul class="topNav" id="topNav">  
                <li class="left"><a href="/Instagrim"> InstaGrim </a></li>
-               <li class="left"> Your world in Black and White </li>
                <li class="right"><a href="../upload.jsp">Upload</a></li>
 
           </ul>
@@ -56,7 +55,7 @@
                 <%}else{
                 String comID = userThumb.toString();
                 %>
-                <img src="/Instagrim/Thumb/<%=comID%>" width="40" height="40">
+                <a href="/Instagrim/Profile/<%=c.getUser()%>"><img src="/Instagrim/Thumb/<%=comID%>" width="40" height="40"></a>
                 <%}%>
                 
                   <div class="dialogbox" style="display: inline-block">
@@ -75,6 +74,9 @@
             </div>
             <%}}%>
             
+            <% if(!lg.getLoggedIn()){%>
+                Please log in to leave a comment!
+            <%}else{%>
             <form method="POST"  action="Comments">
             <div>
 		<textarea rows="10" name="comment" id="comment" maxlength="100" placeholder="Comment"></textarea>
@@ -84,6 +86,7 @@
             	<input type="submit" name="submit" value="Add Comment">
             </div>
             </form>
+            <%}%>
         </div>
     </body>
 </html>
