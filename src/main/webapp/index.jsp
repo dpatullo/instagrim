@@ -52,20 +52,23 @@
                          
                 </li>
            </ul>
-
+        </div>
          <%}
          
                 Cluster cluster = CassandraHosts.getCluster();
                 PicModel pm= new PicModel();
                 pm.setCluster(cluster);
                 Pic p = pm.getRandomPic();
+
+                if(p!=null){
          %>      
         
-        </div>
+        
          
          <img src="/Instagrim/Image/<%=p.getSUUID()%>" style =" min-height: 100%;min-width: 1024px;width: 100%;height: auto; 
               position: fixed; top: 0; left: 0;z-index: -1;filter: blur(3px)">
         
+         <%}%>
          <div class="IntroTextWrapper">
              <div class="IntroText">
                  <p>INSTAGRIM<br><div style="font-size: 35px">Your world in Black and White</div>
